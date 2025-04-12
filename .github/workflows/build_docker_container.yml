@@ -3,7 +3,7 @@ name: Build and Push Oracle Client Image 1
 on:
   push:
     branches:
-      - mainer
+      - main
 
 jobs:
   build:
@@ -15,6 +15,8 @@ jobs:
       
     - name: Ensure Temp Directory Exists
       run: mkdir -p /home/runner/work/_temp
+           ls -al /home/runner/work/_temp
+           ls -al /home/runner/work/
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -29,7 +31,7 @@ jobs:
     - name: Build and push Docker image
       run: |
         /usr/bin/docker buildx build \
-          --iidfile /home/runner/work/_temp/docker-actions-toolkit-5ym0KA/build-iidfile-498c2a8500.txt \
+          --iidfile /home/runner/work/_temp/build-iidfile-498c2a8500.txt \
           --tag ghcr.io/kktest25/database_test_ai/oracle-client:latest \
-          --metadata-file /home/runner/work/_temp/docker-actions-toolkit-5ym0KA/build-metadata-cb02ec144a.json \
+          --metadata-file /home/runner/work/_temp/build-metadata-cb02ec144a.json \
           --push ./oracle-client
