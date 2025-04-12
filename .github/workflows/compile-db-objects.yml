@@ -43,7 +43,7 @@ jobs:
         fi
     
         # Get the list of changed files
-        FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
+        FILES=$(git diff --name-only HEAD^)
     
         # Check if any files were found
         if [ -z "$FILES" ]; then
