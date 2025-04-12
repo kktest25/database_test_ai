@@ -20,9 +20,11 @@ jobs:
     # install git in this step
     - name: Install Git
       run: |
-       apt-get update && apt-get install -y git
+       dnf install -y git
        git --version
-      
+
+    - name: Verify Oracle Linux Version
+      run: cat /etc/os-release      
 
     # Step 2: Identify Changed Files
     - name: Get Changed Files
