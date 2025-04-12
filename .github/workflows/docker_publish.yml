@@ -1,0 +1,28 @@
+name: Publish Docker Image to GHCR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Ensure Temp Directory Exists
+      run: mkdir -p /home/runner/work/_temp
+
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Build Docker Image
+      run: |
+        docker build --iidfile=/home/runner/work/_temp/build-image-id.txt -t ghcr.io/kktest25/database_test_ai/oracle-client:latest .
+
+    - name: Push Docker Image
+      run: |
+        docker push ghcr.io/kktest25/database_test_ai/oracle-client:latest
