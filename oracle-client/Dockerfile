@@ -11,6 +11,7 @@ RUN dnf -y install oracle-release-el8 && \
     dnf -y install oracle-instantclient-release-23ai-el8 && \
     dnf -y install oracle-instantclient-basic && \
     dnf -y install oracle-instantclient-sqlplus && \
+    dnf -y install git && \
     dnf clean all
 
 # Verify installation by printing sqlplus version
