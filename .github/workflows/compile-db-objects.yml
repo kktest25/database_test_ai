@@ -20,7 +20,7 @@ jobs:
     # install git in this step
     - name: Install Git
       run: |
-       sudo apt-get update && sudo apt-get install -y git
+       apt-get update && apt-get install -y git
        git --version
       
 
