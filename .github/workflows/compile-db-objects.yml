@@ -26,18 +26,31 @@ jobs:
       run: cat /etc/os-release      
 
     # Step 2: Identify Changed Files
+    
     - name: Get Changed Files
-      id: changes
       run: |
+        set -euo pipefail
+    
+        # Check if the 'before' commit exists
+        if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+          echo "No previous commit to compare. First commit detected."
+          exit 0
+        fi
+    
+        if ! git cat-file -e "${{ github.event.before }}^{commit}"; then
+          echo "Previous commit not found. It might have been force-pushed or deleted."
+          exit 0
+        fi
+    
         # Get the list of changed files
         FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
-        
-        # Handle errors if no files are found or the git diff command fails
-        if [ $? -ne 0 ] || [ -z "$FILES" ]; then
-          echo "Error: Unable to determine changed files or no files were changed."
-          exit 1
+    
+        # Check if any files were found
+        if [ -z "$FILES" ]; then
+          echo "No files were changed. Exiting."
+          exit 0
         fi
-
+    
         # Export the list of files as an environment variable
         echo "FILES=$FILES" >> $GITHUB_ENV    
 
