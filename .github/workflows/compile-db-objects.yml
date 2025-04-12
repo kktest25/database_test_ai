@@ -17,12 +17,22 @@ jobs:
     # Step 1: Checkout the repository
     - name: Checkout Code
       uses: actions/checkout@v4
+    # install git in this step
+    - name: Install Git
+      run: |
+       dnf install -y git
+       git --version
+
+    - name: Verify Oracle Linux Version
+      run: cat /etc/os-release      
 
     # Step 2: Identify Changed Files
     - name: Get Changed Files
       id: changes
       run: |
-        echo "FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+        #echo "FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+        FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }}) 
+        echo "FILES=$FILES" >> $GITHUB_ENV
 
     # Step 3: Environment-Based Segregation
     - name: Set Environment Variables
