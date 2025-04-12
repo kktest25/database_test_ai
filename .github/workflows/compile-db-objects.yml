@@ -16,7 +16,7 @@ jobs:
     steps:
     # Step 1: Checkout the repository
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Step 2: Identify Changed Files
     - name: Get Changed Files
@@ -54,7 +54,7 @@ jobs:
 
     # Step 5: Upload Execution Log as Artifact
     - name: Upload Execution Log
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: execution-log
         path: $LOG_FILE
