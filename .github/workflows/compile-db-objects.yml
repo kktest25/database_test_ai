@@ -22,7 +22,9 @@ jobs:
     - name: Get Changed Files
       id: changes
       run: |
-        echo "FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+        #echo "FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+        FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }}) 
+        echo "FILES=$FILES" >> $GITHUB_ENV
 
     # Step 3: Environment-Based Segregation
     - name: Set Environment Variables
