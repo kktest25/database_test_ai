@@ -3,7 +3,7 @@ name: Build and Push Oracle Client Image 1
 on:
   push:
     branches:
-      - mainer
+      - main
 
 jobs:
   build:

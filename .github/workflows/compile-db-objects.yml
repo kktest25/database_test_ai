@@ -3,7 +3,7 @@ name: Compile Changed Oracle Database Objects with Logs and Environments
 on:
   push:
     branches:
-      - main
+      - mainer
 
 jobs:
   compile-changed-objects:
