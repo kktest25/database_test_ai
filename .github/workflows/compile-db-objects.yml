@@ -18,9 +18,8 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
     # install git in this step
-    - name: Install Git
+    - name: check Git version
       run: |
-       dnf install -y git
        git --version
 
     - name: Verify Oracle Linux Version
