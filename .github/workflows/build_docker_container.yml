@@ -1,0 +1,32 @@
+name: Build and Push Oracle Client Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      run: |
+        /usr/bin/docker buildx build \
+          --iidfile /home/runner/work/_temp/docker-actions-toolkit-5ym0KA/build-iidfile-498c2a8500.txt \
+          --tag ghcr.io/kktest25/database_test_ai/oracle-client:latest \
+          --metadata-file /home/runner/work/_temp/docker-actions-toolkit-5ym0KA/build-metadata-cb02ec144a.json \
+          --push ./oracle-client
