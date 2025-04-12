@@ -17,6 +17,9 @@ jobs:
     # Step 1: Checkout the repository
     - name: Checkout Code
       uses: actions/checkout@v4
+    # install git in this step
+    - name: Install Git
+      run: sudo apt-get update && sudo apt-get install -y git
 
     # Step 2: Identify Changed Files
     - name: Get Changed Files
