@@ -35,30 +35,9 @@ jobs:
     - name: Get Changed Files
       run: |
         set -euo pipefail
-    
-        # Check if the 'before' commit exists
-        ##  if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-        ##   echo "No previous commit to compare. First commit detected."
-        ##  exit 0
-        ## fi    
-        ##  if ! git cat-file -e "${{ github.event.before }}^{commit}"; then
-        ##    echo "Previous commit not found. It might have been force-pushed or deleted."
-        ##    exit 0
-        ##  fi    
-
-        # Get the list of changed files
-        ## FILES=$(git show --name-only $COMMIT_HASH --pretty=format:)
-        ## Check if any files were found
-        ## if [ -z "$FILES" ]; then
-        ##  echo "No files were changed. Exiting."
-        ##  exit 0
-        ## fi
-    
-        # Export the list of files as an environment variable
-        # echo "FILES=$FILES" # >> $GITHUB_ENV 
 
         # Get Latest Commit Hash
-        echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
 
         # Debug Commit Hash
         echo "COMMIT_HASH is ${{ env.COMMIT_HASH }}"
@@ -66,7 +45,7 @@ jobs:
         echo "latest commit: ${{ github.sha }}"
 
         # Get Changed Files
-        FILES=$(git show --name-only ${{ github.sha }} --pretty=format:)
+        FILES=$(git show --name-only ${{ env.COMMIT_HASH }} --pretty=format:)
         echo "FILES=$FILES" # >> $GITHUB_ENV
 
         # Debug Changed Files
