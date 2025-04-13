@@ -48,8 +48,6 @@ jobs:
 
         # Get the list of changed files
         FILES=$(git show --name-only $COMMIT_HASH --pretty=format:)
-        echo "commit_hash value $COMMIT_HASH"
-    
         # Check if any files were found
         if [ -z "$FILES" ]; then
           echo "No files were changed. Exiting."
