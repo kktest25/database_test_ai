@@ -37,7 +37,7 @@ jobs:
         set -euo pipefail
 
         # Get Latest Commit Hash
-        echo "LATEST_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
+        echo "LATEST_COMMIT=$(${{ github.sha }})" >> $GITHUB_ENV
 
         # Debug Commit Hash
         echo "LATEST_COMMIT is ${{ env.LATEST_COMMIT }}"
