@@ -32,15 +32,15 @@ jobs:
         set -euo pipefail
     
         # Check if the 'before' commit exists
-        if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-          echo "No previous commit to compare. First commit detected."
-          exit 0
-        fi
+      #  if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+       #   echo "No previous commit to compare. First commit detected."
+        #  exit 0
+       # fi
     
-        if ! git cat-file -e "${{ github.event.before }}^{commit}"; then
-          echo "Previous commit not found. It might have been force-pushed or deleted."
-          exit 0
-        fi
+      #  if ! git cat-file -e "${{ github.event.before }}^{commit}"; then
+      #    echo "Previous commit not found. It might have been force-pushed or deleted."
+      #    exit 0
+      #  fi
     
         # Get the list of changed files
         FILES=$(git show --name-only --pretty=format:)
@@ -67,9 +67,12 @@ jobs:
         ORDERED_FOLDERS=("db1/VIEWS" "db1/MATERIALIZED_VIEWS" "db1/PACKAGES" "db1/PACKAGE_BODIES" "db1/SQL")
         
         # Create a log file
+        mkdir -p logs
+        echo "This is a test log file" > logs/log_file.txt
+        ls -l logs/log_file.txt
         LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log" 
-        touch $LOG_FILE
-        
+        touch logs/$LOG_FILE
+
         # Loop through folders in the predefined order
         for folder in "${ORDERED_FOLDERS[@]}"; do
           for file in $FILES; do
