@@ -43,7 +43,7 @@ jobs:
         fi
     
         # Get the list of changed files
-        FILES=$(git diff --name-only HEAD^)
+        FILES=$(git show --name-only --pretty=format:)
     
         # Check if any files were found
         if [ -z "$FILES" ]; then
