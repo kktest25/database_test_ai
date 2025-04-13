@@ -37,7 +37,8 @@ jobs:
         set -euo pipefail
 
         # Get Changed Files
-        FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }} ${{ github.sha }})
+        git fetch --all
+        FILES=$(git show --name-only ${{ github.sha }} --pretty=format:)        
         echo "FILES=$FILES"
 
         # Debug Changed Files
