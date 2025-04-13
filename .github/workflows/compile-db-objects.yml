@@ -17,6 +17,8 @@ jobs:
     # Step 1: Checkout the repository
     - name: Checkout Code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     # install git in this step
     - name: check Git version
       run: |
@@ -30,6 +32,9 @@ jobs:
 
     - name: Debug GITHUB_ENV
       run: ls -l $GITHUB_ENV
+
+    - name: List Recent Commits
+      run: git log --oneline -n 10
 
     # Step 2: Identify Changed Files    
     - name: Get Changed Files
