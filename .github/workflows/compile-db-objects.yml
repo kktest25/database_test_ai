@@ -37,15 +37,14 @@ jobs:
         set -euo pipefail
 
         # Get Latest Commit Hash
-        echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
+        echo "LATEST_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
 
         # Debug Commit Hash
-        echo "COMMIT_HASH is ${{ env.COMMIT_HASH }}"
+        echo "LATEST_COMMIT is ${{ env.LATEST_COMMIT }}"
 
-        echo "latest commit: ${{ github.sha }}"
 
         # Get Changed Files
-        FILES=$(git show --name-only ${{ env.COMMIT_HASH }} --pretty=format:)
+        FILES=$(git show --name-only ${{ env.LATEST_COMMIT }} --pretty=format:)
         echo "FILES=$FILES" # >> $GITHUB_ENV
 
         # Debug Changed Files
