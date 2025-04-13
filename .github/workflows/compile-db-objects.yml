@@ -63,6 +63,8 @@ jobs:
         # Debug Commit Hash
         echo "COMMIT_HASH is ${{ env.COMMIT_HASH }}"
 
+        echo "latest commit: ${{ github.sha }}"
+
         # Get Changed Files
         FILES=$(git show --name-only ${{ github.sha }} --pretty=format:)
         echo "FILES=$FILES" # >> $GITHUB_ENV
