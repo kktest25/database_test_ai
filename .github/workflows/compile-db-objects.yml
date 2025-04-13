@@ -28,6 +28,9 @@ jobs:
     - name: Mark Repository as Safe
       run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
+    - name: Debug GITHUB_ENV
+      run: ls -l $GITHUB_ENV
+
     # Step 2: Identify Changed Files    
     - name: Get Changed Files
       run: |
@@ -53,7 +56,7 @@ jobs:
         fi
     
         # Export the list of files as an environment variable
-        echo "FILES=$FILES" >> $GITHUB_ENV    
+        echo "FILES=$FILES" # >> $GITHUB_ENV    
 
     # Step 3: Environment-Based Segregation
     - name: Set Environment Variables
