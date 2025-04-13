@@ -25,23 +25,21 @@ jobs:
     - name: Verify Oracle Linux Version
       run: cat /etc/os-release      
 
-    # Step 2: Identify Changed Files
-    
+    # Step 2: Identify Changed Files    
     - name: Get Changed Files
       run: |
         set -euo pipefail
     
         # Check if the 'before' commit exists
-      #  if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-       #   echo "No previous commit to compare. First commit detected."
+        #  if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+        #   echo "No previous commit to compare. First commit detected."
         #  exit 0
-       # fi
-    
-      #  if ! git cat-file -e "${{ github.event.before }}^{commit}"; then
-      #    echo "Previous commit not found. It might have been force-pushed or deleted."
-      #    exit 0
-      #  fi
-    
+        # fi    
+        #  if ! git cat-file -e "${{ github.event.before }}^{commit}"; then
+        #    echo "Previous commit not found. It might have been force-pushed or deleted."
+        #    exit 0
+        #  fi    
+
         # Get the list of changed files
         FILES=$(git show --name-only --pretty=format:)
     
