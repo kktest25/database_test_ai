@@ -23,7 +23,10 @@ jobs:
        git --version
 
     - name: Verify Oracle Linux Version
-      run: cat /etc/os-release      
+      run: cat /etc/os-release
+
+    - name: Mark Repository as Safe
+      run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
     # Step 2: Identify Changed Files    
     - name: Get Changed Files
