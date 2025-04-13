@@ -47,15 +47,28 @@ jobs:
         #  fi    
 
         # Get the list of changed files
-        FILES=$(git show --name-only $COMMIT_HASH --pretty=format:)
+        # FILES=$(git show --name-only $COMMIT_HASH --pretty=format:)
         # Check if any files were found
-        if [ -z "$FILES" ]; then
-          echo "No files were changed. Exiting."
-          exit 0
-        fi
+        # if [ -z "$FILES" ]; then
+        #  echo "No files were changed. Exiting."
+        #  exit 0
+        # fi
     
         # Export the list of files as an environment variable
-        echo "FILES=$FILES" # >> $GITHUB_ENV    
+        # echo "FILES=$FILES" # >> $GITHUB_ENV 
+
+        # Get Latest Commit Hash
+        echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+        # Debug Commit Hash
+        echo "COMMIT_HASH is ${{ env.COMMIT_HASH }}"
+
+        # Get Changed Files      
+        FILES=$(git show --name-only ${{ env.COMMIT_HASH }} --pretty=format:)
+        echo "FILES=$FILES" >> $GITHUB_ENV
+        
+        # Debug Changed Files
+        echo "Changed Files: ${{ env.FILES }}"    
 
     # Step 3: Environment-Based Segregation
     - name: Set Environment Variables
