@@ -65,7 +65,7 @@ jobs:
 
         # Get Changed Files      
         FILES=$(git show --name-only ${{ env.COMMIT_HASH }} --pretty=format:)
-        echo "FILES=$FILES" >> $GITHUB_ENV
+        echo "FILES=$FILES" # >> $GITHUB_ENV
         
         # Debug Changed Files
         echo "Changed Files: ${{ env.FILES }}"    
