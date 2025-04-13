@@ -64,23 +64,31 @@ jobs:
       run: |
         echo "${{ github.ref_name }}"
 
+
+    - name: create log file to capture the execution logs
+      run: |
+          # Create a log file
+            mkdir -p logs
+            echo "This is a test log file" > logs/log_file.txt
+            ls -l logs/log_file.txt
+            LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log" 
+            touch logs/$LOG_FILE
+            ls -l logs/$LOG_FILE
+
     # Step 4: Compile Changed Oracle Database Objects in Order and Log Output
     - name: Compile Changed Objects in Order
       run: |
         # Define execution order
         ORDERED_FOLDERS=("db1/VIEWS" "db1/MATERIALIZED_VIEWS" "db1/PACKAGES" "db1/PACKAGE_BODIES" "db1/SQL")
+        echo "ORDERED_FOLDERS=$ORDERED_FOLDERS"
         
-        # Create a log file
-        mkdir -p logs
-        echo "This is a test log file" > logs/log_file.txt
-        ls -l logs/log_file.txt
-        LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log" 
-        touch logs/$LOG_FILE
-        ls -l logs/$LOG_FILE
-
         # Loop through folders in the predefined order
         for folder in "${ORDERED_FOLDERS[@]}"; do
+           echo "folder loop"
           for file in $FILES; do
+            echo "files loop"
+            echo "$folder"
+            echo "$file"
             if [[ $file == $folder/* ]]; then
               echo "Compiling $file in folder $folder" | tee -a $LOG_FILE
               if [[ $folder == db1/* ]]; then
@@ -95,4 +103,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: execution-log
-        path: logs/$LOG_FILE
+        path: logs/${{ env.LOG_FILE }}
