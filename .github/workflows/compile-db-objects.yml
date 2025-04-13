@@ -64,8 +64,8 @@ jobs:
         echo "COMMIT_HASH is ${{ env.COMMIT_HASH }}"
 
         # Get Changed Files      
-        ## FILES=$(git show --name-only ${{ env.COMMIT_HASH }} --pretty=format:)
-        FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }} ${{ github.sha }})
+        FILES=$(git show --name-only ${{ github.sha }} --pretty=format:)
+        ## FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }} ${{ github.sha }})
         echo "FILES=$FILES" # >> $GITHUB_ENV
         
         # Debug Changed Files
