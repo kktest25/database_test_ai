@@ -38,7 +38,7 @@ jobs:
 
         # Get Changed Files
         git fetch --all
-        FILES=$(git show --name-only ${{ github.sha }} --pretty=format:)        
+        FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
         echo "FILES=$FILES"
 
         # Debug Changed Files
