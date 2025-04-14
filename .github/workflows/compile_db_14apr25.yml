@@ -67,10 +67,10 @@ jobs:
             ls -l logs/$LOG_FILE
 
     - name: Segregate and Deploy for Folder1
-      if: env.$FILES && contains(env.$FILES, 'db1/')
+      if: env.FILES && contains(env.FILES, 'db1/')
       run: |
           echo "Processing db1 changes..."
-          for sql_file in $(echo env.$FILES | grep '^db1/'); do
+          for sql_file in $(echo env.FILES | grep '^db1/'); do
             echo "Executing $sql_file for Folder1's Database..."
            done
 
