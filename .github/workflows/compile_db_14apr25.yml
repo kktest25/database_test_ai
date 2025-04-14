@@ -89,7 +89,7 @@ jobs:
             echo "$folder"
             echo "$file"
             if [[ $file == $folder/* ]]; then
-              echo "Compiling $file in folder $folder" | tee -a $LOG_FILE
+              echo "Compiling $file in folder $folder" | tee -a >> $LOG_FILE 2>&1
               if [[ $folder == db1/* ]]; then
                 echo "Compiling $file in folder $folder" | tee -a >> $LOG_FILE 2>&1
               fi
