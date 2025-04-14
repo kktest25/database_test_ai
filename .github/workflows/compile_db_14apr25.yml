@@ -1,0 +1,105 @@
+name: Compile Changed Oracle Database Objects with Logs and Environments
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compile-changed-objects:
+    runs-on: ubuntu-latest
+
+    # Use a Docker container with Oracle Instant Client pre-installed
+    container:
+      image: ghcr.io/kktest25/database_test_ai/oracle-client:latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    # install git in this step
+    - name: check Git version
+      run: |
+       git --version
+
+    - name: Verify Oracle Linux Version
+      run: cat /etc/os-release
+
+    - name: Mark Repository as Safe
+      run: git config --global --add safe.directory $GITHUB_WORKSPACE
+
+    - name: Debug GITHUB_ENV
+      run: ls -l $GITHUB_ENV
+
+    - name: List Recent Commits
+      run: git log --oneline -n 10
+
+    # Step 2: Identify Changed Files    
+    - name: Get Changed Files
+      run: |
+        set -euo pipefail
+
+        # Get Changed Files
+        git fetch --all
+        FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
+        echo "FILES=$FILES"
+
+        # Debug Changed Files
+        echo "Changed Files: ${{ env.FILES }}"    
+
+    # Step 3: Environment-Based Segregation
+    - name: Set Environment Variables
+      id: set-env
+      run: |
+        echo "${{ github.ref_name }}"
+
+
+    - name: create log file to capture the execution logs
+      run: |
+          # Create a log file
+            mkdir -p logs
+            echo "This is a test log file" > logs/log_file.txt
+            ls -l logs/log_file.txt
+            LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log" 
+            touch logs/$LOG_FILE
+            ls -l logs/$LOG_FILE
+
+    - name: Segregate and Deploy for Folder1
+      if: $FILES && contains($FILES, 'db1/')
+      run: |
+          echo "Processing db1 changes..."
+          for sql_file in $(echo $$FILES | grep '^db1/'); do
+            echo "Executing $sql_file for Folder1's Database..."
+           done
+
+    # Step 4: Compile Changed Oracle Database Objects in Order and Log Output
+    - name: Compile Changed Objects in Order
+      run: |
+        # Define execution order
+        ORDERED_FOLDERS=("db1/VIEWS" "db1/MATERIALIZED_VIEWS" "db1/PACKAGES" "db1/PACKAGE_BODIES" "db1/SQL")
+        echo "ORDERED_FOLDERS=$ORDERED_FOLDERS"
+        
+        # Loop through folders in the predefined order
+        for folder in "${ORDERED_FOLDERS[@]}"; do
+           echo "folder loop"
+          for file in $FILES; do
+            echo "files loop"
+            echo "$folder"
+            echo "$file"
+            if [[ $file == $folder/* ]]; then
+              echo "Compiling $file in folder $folder" | tee -a $LOG_FILE
+              if [[ $folder == db1/* ]]; then
+                echo "Compiling $file in folder $folder" | tee -a >> $LOG_FILE 2>&1
+              fi
+            fi
+          done
+        done
+
+    # Step 5: Upload Execution Log as Artifact
+    - name: Upload Execution Log
+      uses: actions/upload-artifact@v4
+      with:
+        name: execution-log
+        path: logs/${{ env.LOG_FILE }}
