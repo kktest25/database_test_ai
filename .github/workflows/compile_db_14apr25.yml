@@ -44,7 +44,7 @@ jobs:
         # Get Changed Files
         git fetch --all
         FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
-        echo "FILES=$FILES"
+        echo "FILES=$FILES" >> $GITHUB_ENV
 
         # Debug Changed Files
         echo "Changed Files: ${{ env.FILES }}"    
@@ -67,10 +67,10 @@ jobs:
             ls -l logs/$LOG_FILE
 
     - name: Segregate and Deploy for Folder1
-      if: $FILES && contains($FILES, 'db1/')
+      if: env.$FILES && contains(env.$FILES, 'db1/')
       run: |
           echo "Processing db1 changes..."
-          for sql_file in $(echo $$FILES | grep '^db1/'); do
+          for sql_file in $(echo env.$FILES | grep '^db1/'); do
             echo "Executing $sql_file for Folder1's Database..."
            done
 
