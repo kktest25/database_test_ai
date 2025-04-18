@@ -52,10 +52,11 @@ jobs:
         FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
         echo "FILES=$FILES" >> $GITHUB_ENV
 
-        # Debug Changed Files
-        echo "Changed Files: ${{ env.FILES }}"    
-
-   
+    - name: Debug Changed Files
+      run: |
+        echo "Changed Files: $FILES"
+      env:
+        FILES: ${{ env.FILES }}
 
 
     - name: create log file to capture the execution logs
