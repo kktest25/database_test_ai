@@ -51,6 +51,7 @@ jobs:
         git fetch --all
         FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
         echo "FILES=$FILES" >> $GITHUB_ENV
+        echo "FILES=$FILES"
 
     - name: Debug Changed Files
       run: |
@@ -73,9 +74,11 @@ jobs:
       if: env.FILES && contains(env.FILES, 'db1/')
       run: |
           echo "Processing db1 changes..."
-          for sql_file in $(echo env.FILES | grep '^db1/'); do
+          for sql_file in $(echo $FILES | grep '^db1/'); do
             echo "Executing $sql_file for Folder1's Database..."
            done
+      env:
+        FILES: ${{ env.FILES }}     
 
     # Step 4: Compile Changed Oracle Database Objects in Order and Log Output
     - name: Compile Changed Objects in Order
