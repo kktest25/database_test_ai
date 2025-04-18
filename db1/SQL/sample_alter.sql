@@ -7,3 +7,4 @@ sixth line in sql folder temp script
 seventh line in sql folder temp script
 8th line in sql folder temp script
 9th line in sql folder temp script
+10th line in sql folder temp script
