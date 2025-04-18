@@ -36,6 +36,12 @@ jobs:
     - name: List Recent Commits
       run: git log --oneline -n 10
 
+    # Step 3: Environment-Based Segregation
+    - name: Set Environment Variables
+      id: set-env
+      run: |
+        echo "${{ github.ref_name }}"
+
     # Step 2: Identify Changed Files    
     - name: Get Changed Files
       run: |
@@ -49,11 +55,7 @@ jobs:
         # Debug Changed Files
         echo "Changed Files: ${{ env.FILES }}"    
 
-    # Step 3: Environment-Based Segregation
-    - name: Set Environment Variables
-      id: set-env
-      run: |
-        echo "${{ github.ref_name }}"
+   
 
 
     - name: create log file to capture the execution logs
