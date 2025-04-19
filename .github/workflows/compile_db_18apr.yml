@@ -67,7 +67,8 @@ jobs:
             mkdir -p logs
             echo "This is a test log file" > logs/log_file.txt
             ls -l logs/log_file.txt
-            LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log" 
+            LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log"
+            echo "LOG_FILE=logs/$LOG_FILE" >> $GITHUB_ENV
             touch logs/$LOG_FILE
             ls -l logs/$LOG_FILE
             sqlplus -v >> logs/$LOG_FILE
