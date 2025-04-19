@@ -13,6 +13,8 @@ jobs:
     container:
       image: ghcr.io/kktest25/database_test_ai/oracle-client:latest
 
+    environment: DEV
+
     steps:
     # Step 1: Checkout the repository
     - name: Checkout Code
@@ -108,13 +110,21 @@ jobs:
           # Log the temporary script and SQL*Plus version
           sqlplus -v >> $LOG_FILE
           cat temp_exec/$TEMP_SCRIPT >> $LOG_FILE
+
+          temp_query="sample_query.sql"
+          touch temp_exec/$temp_query
+          echo "select * from v$version;" > temp_exec/$temp_query
     
           echo "Executing combined deployment script for db1..."
+          sqlplus "$DB_USERNAME/$DB_PASSWORD@$DB_TNS" @temp_exec/$temp_query >> $LOG_FILE 2>&1
     
           # Clean up the temporary script
           rm -f temp_exec/$TEMP_SCRIPT
       env:
         FILES: ${{ env.FILES }}
+        DB_USERNAME: ${{ secrets.DB_USER_NAME }}
+        DB_PASSWORD: ${{ secrets.DB_PWD }}
+        DB_TNS: ${{ secrets.DB_CONN_STRING }}
 
     # Step 5: Upload Execution Log as Artifact
     - name: Upload Execution Log
