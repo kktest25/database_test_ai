@@ -98,7 +98,8 @@ jobs:
               echo "Adding $sql_file to deployment script for $component..."
               cat "$sql_file" >> $TEMP_SCRIPT  # Append the content of each SQL file
               echo "/" >> $TEMP_SCRIPT         # Add a slash to indicate end of SQL block
-              echo sqlplus -v >> $LOG_FILE 2>&1
+              sqlplus -v >> $LOG_FILE
+              cat "$TEMP_SCRIPT" >> $LOG_FILE
             done
           done
     
