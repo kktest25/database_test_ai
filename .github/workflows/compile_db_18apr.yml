@@ -50,7 +50,7 @@ jobs:
         # Get Changed Files
         git fetch --all
         FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
-        echo "FILES=$FILES" >> $GITHUB_ENV
+        echo "FILES=$(echo \"$FILES\" | tr '\n' ' ')" >> $GITHUB_ENV
 
     - name: Debug Changed Files
       run: |
@@ -90,7 +90,7 @@ jobs:
           echo "/* Temporary deployment script for db1 changes */" >> $TEMP_SCRIPT
     
           # Define the execution order
-          COMPONENT_ORDER=("SQL/" "VIEWS/" "PACKAGES/" "TRIGGERS/" "PROCEDURES/" "FUNCTIONS/")
+          COMPONENT_ORDER=("SQL/" "VIEWS/" "PACKAGES/" "PACKAGE_BODIES/" "MATERIALIZED_VIEWS/" "TRIGGERS/" "PROCEDURES/" "FUNCTIONS/")
     
           # Sort and append files to the temporary script in the defined order
           for component in "${COMPONENT_ORDER[@]}"; do
