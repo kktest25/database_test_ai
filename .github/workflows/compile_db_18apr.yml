@@ -98,7 +98,7 @@ jobs:
           # Sort and append files to the temporary script in the defined order
           for component in "${COMPONENT_ORDER[@]}"; do
             for sql_file in $(echo "$FILES" | grep "^db1/$component"); do
-              echo "Adding $sql_file to deployment script for $component..." | tee -a "$LOG_FILE"
+              echo "Adding $sql_file to deployment script for $component..." | tee -a logs/$LOG_FILE
               cat "$sql_file" >> temp_exec/$TEMP_SCRIPT  # Append the content of each SQL file
               echo "/" >> temp_exec/$TEMP_SCRIPT         # Add a slash to indicate end of SQL block
             done
