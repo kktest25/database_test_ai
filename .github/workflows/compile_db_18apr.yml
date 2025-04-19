@@ -68,6 +68,7 @@ jobs:
             LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log" 
             touch logs/$LOG_FILE
             ls -l logs/$LOG_FILE
+            sqlplus -v >> logs/$LOG_FILE
 
     - name: Segregate and Deploy for Folder1
       if: env.FILES && contains(env.FILES, 'db1/')
@@ -86,27 +87,29 @@ jobs:
           mkdir -p temp_exec
           TEMP_SCRIPT="temp_deploy_db1.sql"
           touch temp_exec/$TEMP_SCRIPT
-          echo "SET DEFINE OFF;" > $TEMP_SCRIPT  # Add any SQLPlus settings here
-          echo "/* Temporary deployment script for db1 changes */" >> $TEMP_SCRIPT
-    
+          echo "SET DEFINE OFF;" > temp_exec/$TEMP_SCRIPT  # Add any SQLPlus settings here
+          echo "/* Temporary deployment script for db1 changes */" >> temp_exec/$TEMP_SCRIPT
+
           # Define the execution order
           COMPONENT_ORDER=("SQL/" "VIEWS/" "PACKAGES/" "PACKAGE_BODIES/" "MATERIALIZED_VIEWS/" "TRIGGERS/" "PROCEDURES/" "FUNCTIONS/")
-    
+          
           # Sort and append files to the temporary script in the defined order
           for component in "${COMPONENT_ORDER[@]}"; do
-            for sql_file in $(echo $FILES | grep "^db1/$component"); do
-              echo "Adding $sql_file to deployment script for $component..."
-              cat "$sql_file" >> $TEMP_SCRIPT  # Append the content of each SQL file
-              echo "/" >> $TEMP_SCRIPT         # Add a slash to indicate end of SQL block
-              sqlplus -v >> $LOG_FILE
-              cat "$TEMP_SCRIPT" >> $LOG_FILE
+            for sql_file in $(echo "$FILES" | grep "^db1/$component"); do
+              echo "Adding $sql_file to deployment script for $component..." | tee -a logs/"$LOG_FILE"
+              cat "$sql_file" >> temp_exec/$TEMP_SCRIPT  # Append the content of each SQL file
+              echo "/" >> temp_exec/$TEMP_SCRIPT         # Add a slash to indicate end of SQL block
             done
           done
+          
+          # Log the temporary script and SQL*Plus version
+          sqlplus -v >> logs/"$LOG_FILE"
+          cat "$TEMP_SCRIPT" >> logs/"$LOG_FILE"
     
           echo "Executing combined deployment script for db1..."
     
           # Clean up the temporary script
-          rm -f $TEMP_SCRIPT
+          rm -f temp_exec/$TEMP_SCRIPT
       env:
         FILES: ${{ env.FILES }}
 
