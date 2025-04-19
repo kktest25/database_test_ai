@@ -107,7 +107,7 @@ jobs:
           
           # Log the temporary script and SQL*Plus version
           sqlplus -v >> $LOG_FILE
-          cat "$TEMP_SCRIPT" >> $LOG_FILE
+          cat temp_exec/$TEMP_SCRIPT >> $LOG_FILE
     
           echo "Executing combined deployment script for db1..."
     
