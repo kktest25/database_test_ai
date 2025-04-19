@@ -3,7 +3,7 @@ name: Compile Changed Oracle Database Objects with Logs and Environments
 on:
   push:
     branches:
-      - mainer_to_be_modified
+      - main
 
 jobs:
   compile-changed-objects:
@@ -83,8 +83,10 @@ jobs:
     - name: Segregate and Deploy for db1
       if: env.FILES && contains(env.FILES, 'db1/')
       run: |
-          echo "Processing db1 changes..."
+          echo "deployment of db1 changes..."
+          mkdir -p temp_exec
           TEMP_SCRIPT="temp_deploy_db1.sql"
+          touch temp_exec/$TEMP_SCRIPT
           echo "SET DEFINE OFF;" > $TEMP_SCRIPT  # Add any SQLPlus settings here
           echo "/* Temporary deployment script for db1 changes */" >> $TEMP_SCRIPT
     
@@ -97,6 +99,7 @@ jobs:
               echo "Adding $sql_file to deployment script for $component..."
               cat "$sql_file" >> $TEMP_SCRIPT  # Append the content of each SQL file
               echo "/" >> $TEMP_SCRIPT         # Add a slash to indicate end of SQL block
+              echo sqlplus -v >> $LOG_FILE 2>&1
             done
           done
     
