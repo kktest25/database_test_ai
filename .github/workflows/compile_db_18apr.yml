@@ -51,7 +51,6 @@ jobs:
         git fetch --all
         FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
         echo "FILES=$FILES" >> $GITHUB_ENV
-        echo "FILES=$FILES"
 
     - name: Debug Changed Files
       run: |
