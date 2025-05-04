@@ -1,0 +1,134 @@
+name: Compile Changed Oracle Database Objects with Logs and Environments
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compile-changed-objects:
+    runs-on: [self-hosted, Linux, X64]
+
+    # Use a Docker container with Oracle Instant Client pre-installed
+    container:
+      image: ghcr.io/kktest25/database_test_ai/oracle-client:latest
+
+    environment: DEV
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    # install git in this step
+    - name: check Git version
+      run: |
+       git --version
+
+    - name: Verify Oracle Linux Version
+      run: cat /etc/os-release
+
+    - name: Mark Repository as Safe
+      run: git config --global --add safe.directory $GITHUB_WORKSPACE
+
+    - name: Debug GITHUB_ENV
+      run: ls -l $GITHUB_ENV
+
+    - name: List Recent Commits
+      run: git log --oneline -n 10
+
+    # Step 3: Environment-Based Segregation
+    - name: Set Environment Variables
+      id: set-env
+      run: |
+        echo "${{ github.ref_name }}"
+
+    # Step 2: Identify Changed Files    
+    - name: Get Changed Files
+      run: |
+        set -euo pipefail
+
+        # Get Changed Files
+        git fetch --all
+        FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})
+        echo "FILES<<EOF" >> $GITHUB_ENV
+        echo "$FILES" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Debug Changed Files
+      run: |
+        echo "Changed Files: $FILES"
+      env:
+        FILES: ${{ env.FILES }}
+
+
+    - name: create log file to capture the execution logs
+      run: |
+          # Create a log file
+            mkdir -p logs
+            echo "This is a test log file" > logs/log_file.txt
+            ls -l logs/log_file.txt
+            LOG_FILE="execution_log_$(date +'%Y%m%d%H%M%S').log"
+            echo "LOG_FILE=logs/$LOG_FILE" >> $GITHUB_ENV
+            touch logs/$LOG_FILE
+            ls -l logs/$LOG_FILE
+            sqlplus -v >> logs/$LOG_FILE
+
+    - name: Segregate and Deploy for Folder1
+      if: env.FILES && contains(env.FILES, 'db1/')
+      run: |
+          echo "Processing db1 changes..."
+          for sql_file in $(echo $FILES | grep '^db1/'); do
+            echo "Executing $sql_file for Folder1's Database..."
+           done
+      env:
+        FILES: ${{ env.FILES }}
+  
+    - name: Segregate and Deploy for db1
+      if: env.FILES && contains(env.FILES, 'db1/')
+      run: |
+          echo "deployment of db1 changes..."
+          mkdir -p temp_exec
+          TEMP_SCRIPT="temp_deploy_db1.sql"
+          touch temp_exec/$TEMP_SCRIPT
+          echo "SET DEFINE OFF;" > temp_exec/$TEMP_SCRIPT  # Add any SQLPlus settings here
+          echo "/* Temporary deployment script for db1 changes */" >> temp_exec/$TEMP_SCRIPT
+
+          # Define the execution order
+          COMPONENT_ORDER=("SQL/" "VIEWS/" "PACKAGES/" "PACKAGE_BODIES/" "MATERIALIZED_VIEWS/" "TRIGGERS/" "PROCEDURES/" "FUNCTIONS/")
+          
+          # Sort and append files to the temporary script in the defined order
+          for component in "${COMPONENT_ORDER[@]}"; do
+            for sql_file in $(echo "$FILES" | grep "^db1/$component"); do
+              echo "Adding $sql_file to deployment script for $component..." | tee -a $LOG_FILE
+              cat "$sql_file" >> temp_exec/$TEMP_SCRIPT  # Append the content of each SQL file
+              echo "/" >> temp_exec/$TEMP_SCRIPT         # Add a slash to indicate end of SQL block
+            done
+          done
+          
+          # Log the temporary script and SQL*Plus version
+          sqlplus -v >> $LOG_FILE
+          cat temp_exec/$TEMP_SCRIPT >> $LOG_FILE
+
+          temp_query="sample_query.sql"
+          touch temp_exec/$temp_query
+          echo "select * from v$version;" > temp_exec/$temp_query
+    
+          echo "Executing combined deployment script for db1..."
+          sqlplus "$DB_USERNAME/$DB_PASSWORD@$DB_TNS" @temp_exec/$temp_query >> $LOG_FILE 2>&1
+    
+          # Clean up the temporary script
+          rm -f temp_exec/$TEMP_SCRIPT
+      env:
+        FILES: ${{ env.FILES }}
+        DB_USERNAME: ${{ secrets.DB_USER_NAME }}
+        DB_PASSWORD: ${{ secrets.DB_PWD }}
+        DB_TNS: ${{ secrets.DB_CONN_STRING }}
+
+    # Step 5: Upload Execution Log as Artifact
+    - name: Upload Execution Log
+      uses: actions/upload-artifact@v4
+      with:
+        name: execution-log
+        path: ${{ env.LOG_FILE }}
